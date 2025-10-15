@@ -1,10 +1,12 @@
-const signDict = {}; // will load JSON
+let signDict = {};
 
 async function loadSigns() {
   const response = await fetch("data/signs.json");
-  const data = await response.json();
-  Object.assign(signDict, data);
+  signDict = await response.json();
 }
+
+// Call loadSigns when the page loads
+window.addEventListener("DOMContentLoaded", loadSigns);
 
 async function convertText() {
   const input = document.getElementById("inputText").value.toLowerCase();
@@ -18,6 +20,7 @@ async function convertText() {
       const img = document.createElement("img");
       img.src = imgSrc;
       img.alt = word;
+      img.width = 200;
       outputDiv.appendChild(img);
     } else {
       outputDiv.appendChild(document.createTextNode(`[${word}] `));
