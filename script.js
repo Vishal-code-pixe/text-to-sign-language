@@ -1,22 +1,9 @@
-let signDict = {};
+const signDict = {}; // will load JSON
 
 async function loadSigns() {
   const response = await fetch("data/signs.json");
-  signDict = await response.json();
-}
-
-async function fetchSign(word) {
-  const url = `https://api.spreadthesign.com/en.us/search/${word}`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data.length > 0 && data[0].videos.length > 0) {
-      return data[0].videos[0].url;
-    }
-  } catch (err) {
-    console.error("Error fetching sign:", err);
-  }
-  return null;
+  const data = await response.json();
+  Object.assign(signDict, data);
 }
 
 async function convertText() {
@@ -26,26 +13,14 @@ async function convertText() {
   outputDiv.innerHTML = "";
 
   for (const word of words) {
-    let signUrl = signDict[word];
-
-    if (!signUrl) {
-      signUrl = await fetchSign(word);
-    }
-
-    if (signUrl) {
-      const video = document.createElement("video");
-      video.src = signUrl;
-      video.autoplay = true;
-      video.loop = true;
-      video.muted = true;
-      video.width = 200;
-      outputDiv.appendChild(video);
+    const imgSrc = signDict[word];
+    if (imgSrc) {
+      const img = document.createElement("img");
+      img.src = imgSrc;
+      img.alt = word;
+      outputDiv.appendChild(img);
     } else {
-      const span = document.createElement("span");
-      span.textContent = `[${word}] `;
-      outputDiv.appendChild(span);
+      outputDiv.appendChild(document.createTextNode(`[${word}] `));
     }
   }
 }
-
-loadSigns();
